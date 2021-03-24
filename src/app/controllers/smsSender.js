@@ -1,9 +1,9 @@
 const request = require('request');
 
-exports.sendOtp = (mobile,otp)=>{
+exports.sendsms = (mobile,sms)=>{
 
     try{
-         let url = `https://api.authkey.io/request?authkey=adcf150aff1189b2&mobile=${mobile}&country_code=+91&sms=Hello, your OTP for zoompe app is ${otp}`;
+         let url = `https://api.authkey.io/request?authkey=adcf150aff1189b2&mobile=${mobile}&country_code=+91&sms=${sms}`;
          request.get(url);
     }
     catch(e)

@@ -1,12 +1,15 @@
 const express = require('express');
 const bodyparser = require('body-parser');
 const userroutes = require('./app/routes/userRoutes');
+const paymentRoutes = require('./app/routes/paymentRoutes');
 const app = express();
+const path = require('path');
 
 
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({extended:true}));
 app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 
 
 app.get('/',(req,res)=>{
@@ -15,6 +18,7 @@ app.get('/',(req,res)=>{
 });
 
 app.use('/user',userroutes);
+app.use('/payment',paymentRoutes);
 
 
 app.listen(3000,()=>{

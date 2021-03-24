@@ -4,7 +4,7 @@ const otpSender = require('../controllers/smsSender');
 var redis = require('../modules/redis');
 const sql = require('../modules/sql');
 const uniqid = require('uniqid');
-const { query } = require('express');
+const config = require('../config/config');
 
 
 exports.registerUserByMobile = async(req,res)=>{
@@ -26,7 +26,7 @@ exports.registerUserByMobile = async(req,res)=>{
         'attempts' : 3,
     });
     redis.expire(mobile,3000);
-    otpSender.sendOtp(mobile,otp);
+    otpSender.sendsms(mobile,otp);
     console.log(`your otp is ${otp}`);
     res.status(200).send({"code": 200, "msg": "otp sent please verify otp to register"});
 
@@ -123,7 +123,7 @@ exports.register = async (req,res)=>{
              await sql.query(query1,[UserId,FirstName,LastName,DOB,mobile,AccountStarted,EmailId]);
              let query2 = 'INSERT INTO wallet(UserId) VALUES(?)';
              await sql.query(query2,[UserId]);
-             const token =jwt.sign({id:UserId,name:FirstName,mobile:mobile},'ZoompePrivateKey');
+             const token =jwt.sign({UserId:UserId,FirstName:FirstName,Mobile:mobile},config.jwtPrivateKey);
              res.status(200).header('x-auth-token',token).send("User Registered Successfully");
          }
     })
@@ -155,9 +155,9 @@ exports.loginByOtp = async(req,res)=>{
           });
 
         redis.expire(mobile,3000);
-        otpSender.sendOtp(mobile,otp);
+        otpSender.sendsms(mobile,otp);
         console.log(`your otp is ${otp}`);
-        res.status(200).send({"code": 200, "msg": "otp sent please verify otp to register"});
+        res.status(200).send({"code": 200, "msg": "otp sent please verify otp to login"});
     }
     catch(e)
     {
@@ -209,7 +209,7 @@ exports.loginVerifyOtp = async(req,res)=>{
             return res.status(401).send({"status": false, "code": 401, "msg": "user not registered"});
             let UserId = row[0].UserId;
             let FirstName = row[0].FirstName;
-            const token =jwt.sign({id:UserId,name:FirstName,mobile:mobile},'ZoompePrivateKey');
+            const token =jwt.sign({UserId:UserId,FirstName:FirstName,Mobile:mobile},config.jwtPrivateKey);
             return res.status(200).header('x-auth-token',token).send("User Logged in Successfully");
         }
         return res.status(401).send({"status": false, "code": 401, "msg": "something wrong happens"});
