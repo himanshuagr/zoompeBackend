@@ -20,7 +20,8 @@ app.get('/',(req,res)=>{
 app.use('/user',userroutes);
 app.use('/payment',paymentRoutes);
 
+const PORT = process.env.PORT || 3000;
 
-app.listen(3000,()=>{
+app.listen(PORT,()=>{
     console.log("server started successfully on port 3000");
 });
