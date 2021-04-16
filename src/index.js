@@ -7,10 +7,6 @@ const path = require('path');
 require('./doenv');
 const PORT = process.env.PORT ||3000;
 
-const paytmconfig = require('./app/config/paytmconfig');
-console.log(paytmconfig.CallbackURL);
-
-
 
 
 app.use(bodyparser.json());
