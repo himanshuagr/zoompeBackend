@@ -10,5 +10,12 @@ var connection = msql.createPool({
 
 });
 
+connection.getConnection().then((conn)=>{
+   
+    console.log("sql Db Connected");
+
+}).catch((err)=>{
+    console.log(err);
+})
 
 module.exports = connection;

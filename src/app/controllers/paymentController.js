@@ -23,7 +23,7 @@ exports.addmoneytowallet = async(req,res)=>{
        "mid"           : paytmconfig.MID,
        "websiteName"   : paytmconfig.Website,
        "orderId"       : TransactionId,
-       "callbackUrl"   : "http://localhost:3000/payment/verifypayment",
+       "callbackUrl"   : paytmconfig.CallbackURL,
        "txnAmount"     : {
           "value"     : amount,
           "currency"  : "INR",
@@ -178,6 +178,7 @@ exports.walletTransfer = async (req,res)=>{
          var RecieverId = row2[0].UserId;
          if(UserId==RecieverId)
          return res.status(401).send({"status": false, "code": 401, "msg": "Cannot transfer money"}); 
+         
          var userWalletBalance = await getWalletBalance(UserId);
          var recieverWalletBalance = await getWalletBalance(RecieverId);
          if(userWalletBalance<amount)
@@ -232,6 +233,8 @@ function dorequest(options,post_data)
 function updateTransaction(TransactionId,UserId,CreditAmount,DebitAmount,IsSuccessful,TransactionDate,Balance,TransactionType,TranasctionDetails,Ref,OtherDetails)
 {
     return new Promise((resolve,reject)=>{
+
+  
         let query = 'INSERT INTO transactions(TransactionId,UserId,CreditAmount,DebitAmount,IsSuccessful,TransactionDate,Balance,TransactionType,TranasctionDetails,Ref,OtherDetails) VALUES(?,?,?,?,?,?,?,?,?,?,?)';
         sql.query(query,[TransactionId,UserId,CreditAmount,DebitAmount,IsSuccessful,TransactionDate,Balance,TransactionType,TranasctionDetails,Ref,OtherDetails])
          resolve('transaction updated');

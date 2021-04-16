@@ -225,3 +225,66 @@ exports.loginVerifyOtp = async(req,res)=>{
 
 
 };
+
+exports.getWalletBalance = async(req,res)=>{
+
+     var UserId = req.user.UserId;
+     try{
+       
+        let query = "SELECT * FROM wallet WHERE UserId = ?";
+        var [row,field] = await sql.query(query,[UserId]);
+        var Balance = row[0].Balance;
+        return res.status(200).send({
+            "Balance": Balance
+        });
+     }
+     catch(e)
+     {
+         console.log(e.stack);
+        return res.status(401).send({"status": false, "code": 401, "msg": "unable to fetch wallet balance"});
+     }
+
+}
+
+
+exports.getTransactionDetails = async(req,res)=>{
+
+      var UserId = req.user.UserId;
+      var index = req.body.index;
+      try{
+       
+        let query = `
+        SELECT CreditAmount,DebitAmount,TransactionType,TranasctionDetails,ref,TimeOfTransaction 
+        FROM transactions
+        WHERE UserId = ? AND IsSuccessful = 1
+        ORDER BY TimeOfTransaction ASC;
+        `;
+        var [row,field] = await sql.query(query,[UserId]);
+        if(row.length==index)
+         return res.status(300).send();
+        var transaction = []; 
+        for(var i=index;i<row.length;i++)
+        {
+               let data={
+                   "Credit" : row[i].CreditAmount,
+                   "Debit"  : row[i].DebitAmount,
+                   "Ref"    : row[i].ref,
+                   "Time"   : row[i].TimeOfTransaction,
+                   "Details": row[i].TranasctionDetails,
+                   "Type"   : row[i].TransactionType
+               };
+               transaction.push(data);
+        } 
+        return res.status(200).send(transaction);
+
+      }
+      catch(e){
+        console.log(e.stack);
+        return res.status(401).send({"status": false, "code": 401, "msg": "unable to fetch wallet Transaction Details"});
+      }
+   
+
+
+};
+
+

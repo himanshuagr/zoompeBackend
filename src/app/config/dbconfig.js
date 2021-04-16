@@ -1,8 +1,8 @@
 module.exports={
    
-     Host : 'localhost',
-     User : 'root',
-     Password : "Cocacola@12",
+     Host : 'zoompe.cninninitrde.us-east-2.rds.amazonaws.com',
+     User : 'admin',
+     Password : "zoompe123",
      Database : "zoompe"
 
 

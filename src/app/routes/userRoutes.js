@@ -9,5 +9,8 @@ router.post('/registerVerifyOtp',userController.registerVerifyOtp);
 router.post('/register',userController.register);
 router.post('/loginByOtp',userController.loginByOtp);
 router.post('/loginVerifyOtp',userController.loginVerifyOtp);
+router.get('/getWalletBalance',auth,userController.getWalletBalance);
+router.get('/getTransactionDetails',auth,userController.getTransactionDetails);
+
 
 module.exports=router;
