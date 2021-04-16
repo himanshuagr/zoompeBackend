@@ -4,6 +4,13 @@ const userroutes = require('./app/routes/userRoutes');
 const paymentRoutes = require('./app/routes/paymentRoutes');
 const app = express();
 const path = require('path');
+require('./doenv');
+const PORT = process.env.PORT ||3000;
+
+const paytmconfig = require('./app/config/paytmconfig');
+console.log(paytmconfig.CallbackURL);
+
+
 
 
 app.use(bodyparser.json());
@@ -13,6 +20,7 @@ app.set('views', path.join(__dirname, 'views'));
 
 
 app.get('/',(req,res)=>{
+   
     res.status(200).send("port started successfully");
     
 });
@@ -20,7 +28,8 @@ app.get('/',(req,res)=>{
 app.use('/user',userroutes);
 app.use('/payment',paymentRoutes);
 
-const PORT = process.env.PORT || 3000;
+
+
 
 app.listen(PORT,()=>{
     console.log("server started successfully on port 3000");

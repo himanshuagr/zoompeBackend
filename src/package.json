@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index.js"
+    "start": "nodemon index.js",
+    "prod": "NODE_ENV=prod nodemon index.js"
   },
   "author": "Himanshu agrawal",
   "license": "ISC",
@@ -13,6 +14,7 @@
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "cros": "^1.0.1",
+    "dotenv": "^8.2.0",
     "ejs": "^3.1.6",
     "express": "^4.17.1",
     "handlebars": "^4.7.7",
