@@ -124,7 +124,8 @@ exports.register = async (req,res)=>{
              let query2 = 'INSERT INTO wallet(UserId) VALUES(?)';
              await sql.query(query2,[UserId]);
              const token =jwt.sign({UserId:UserId,FirstName:FirstName,Mobile:mobile},config.jwtPrivateKey);
-             res.status(200).header('x-auth-token',token).send("User Registered Successfully");
+             res.status(200).send({"code": 200, "msg": "Registered"});
+
          }
     })
     }
