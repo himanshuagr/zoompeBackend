@@ -124,7 +124,7 @@ exports.register = async (req,res)=>{
              let query2 = 'INSERT INTO wallet(UserId) VALUES(?)';
              await sql.query(query2,[UserId]);
              const token =jwt.sign({UserId:UserId,FirstName:FirstName,Mobile:mobile},config.jwtPrivateKey);
-             res.status(200).send({"code": 200, "msg": "Registered"});
+             res.status(200).header('x-auth-token',token).send({"code": 200, "msg": "Registered"});
 
          }
     })
@@ -211,7 +211,7 @@ exports.loginVerifyOtp = async(req,res)=>{
             let UserId = row[0].UserId;
             let FirstName = row[0].FirstName;
             const token =jwt.sign({UserId:UserId,FirstName:FirstName,Mobile:mobile},config.jwtPrivateKey);
-            return res.status(200).header('x-auth-token',token).send("User Logged in Successfully");
+            return res.status(200).header('x-auth-token',token).send({"code":200,"msg":"user logged in sucessfully"});
         }
         return res.status(401).send({"status": false, "code": 401, "msg": "something wrong happens"});
         
