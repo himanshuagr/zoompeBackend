@@ -5,14 +5,14 @@ exports.registerNFC = async (req,res)=>{
 
     
      var userId = req.user.UserId;
-     var nfcID = req.body.ndcID;
+     var nfcID = req.body.nfcID;
      var pin = req.body.pin;
      
      try{
      if(!userId||!nfcID||!pin)
      return res.status(401).send({"status": false, "code": 401, "msg": "Insufficent query"});
      let query = 'SELECT * FROM users WHERE UserId = ?';
-     var [row,field] = await sql.query(query,[UserId]);
+     var [row,field] = await sql.query(query,[userId]);
     if(row[0]==null)
     return res.status(401).send({"status": false, "code": 401, "msg": "user not registered"}); 
     let query1 = 'SELECT * FROM NFCTAGS WHERE NFCID = ?'
@@ -22,7 +22,7 @@ exports.registerNFC = async (req,res)=>{
     if(row1[0].IsRegistered==true)
     return res.status(401).send({"status": false, "code": 401, "msg": "NFC Tag already registered"});
     
-    let query2 = 'UPDATE NFCTAG SET UserId = ?,PIN = ?,IsRegistered = true,IsActivated = true WHERE NFCID = ?';
+    let query2 = 'UPDATE NFCTAGS SET UserId = ?,PIN = ?,IsRegistered = true,IsActivated = true WHERE NFCID = ?';
     await sql.query(query2,[userId,pin,nfcID]);
     return res.status(200).send({"code":200,"msg":"NFC Registered"});
 
@@ -42,7 +42,7 @@ exports.registerNFC = async (req,res)=>{
 exports.getPaymentByNFC = async(req,res)=>{
 
     var userId = req.user.UserId;
-    var nfcID = req.body.ndcID;
+    var nfcID = req.body.nfcID;
     var pin = req.body.pin;
     var amount = req.body.amount;
 
@@ -52,7 +52,7 @@ exports.getPaymentByNFC = async(req,res)=>{
         if(!userId||!nfcID||!pin||!amount)
         return res.status(401).send({"status": false, "code": 401, "msg": "Insufficent query"});
         let query = 'SELECT * FROM users WHERE UserId = ?';
-        var [row,field] = await sql.query(query,[UserId]);
+        var [row,field] = await sql.query(query,[userId]);
         if(row[0]==null)
            return res.status(401).send({"status": false, "code": 401, "msg": "user not registered"}); 
         let query1 = 'SELECT * FROM NFCTAGS WHERE NFCID = ?'
@@ -63,7 +63,7 @@ exports.getPaymentByNFC = async(req,res)=>{
         return res.status(401).send({"status": false, "code": 401, "msg": "Invalid nfc tag"});
         if(row1[0].IsActivated==false)
         return res.status(401).send({"status": false, "code": 401, "msg": "NFC tag not activated"});
-        var [row2,field2] = await sql.query(query,[row1[0].customerId]);
+        var [row2,field2] = await sql.query(query,[row1[0].UserId]);
 
 
 
@@ -79,6 +79,14 @@ exports.getPaymentByNFC = async(req,res)=>{
         if(amount>custometBalance)
         return res.status(401).send({"status": false, "code": 401, "msg": "Insufficient Balance"});
 
+
+        if(amount==0)
+        return res.status(401).send({"status": false, "code": 401, "msg": "amount should not be zero"});
+        if(customerId==recieverId)
+        return res.status(401).send({"status": false, "code": 401, "msg": "cannot initiate transaction"});
+
+
+
         custometBalance = custometBalance-amount;
         recieverBalance = recieverBalance+amount;
 
@@ -92,13 +100,13 @@ exports.getPaymentByNFC = async(req,res)=>{
          
         //update transaction and wallet
 
-        await updateTransaction(TranasctionDetailscustomer,customerId,0,amount,true,date,custometBalance,'N2W',TranasctionDetailscustomer,RecieverMobile,nfcID);
+        await updateTransaction(TransactionIdcustomer,customerId,0,amount,true,date,custometBalance,'N2W',TranasctionDetailscustomer,RecieverMobile,nfcID);
         await updateTransaction(TransactionIdReciever,recieverId,amount,0,true,date,recieverBalance,'N2W',TranasctionDetailsReciever,customerMobile,nfcID);
 
         await updateWalletBalance(customerId,custometBalance);
         await updateWalletBalance(recieverId,recieverBalance);
 
-        return res.status(200).send({"code":200,"msg":"Payment Successfull"});
+        return res.status(200).send({"code":200,"msg":"Payment Successful"});
 
             
 
