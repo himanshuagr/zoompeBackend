@@ -2,6 +2,7 @@ const express = require('express');
 const bodyparser = require('body-parser');
 const userroutes = require('./app/routes/userRoutes');
 const paymentRoutes = require('./app/routes/paymentRoutes');
+const nfcRoutes = require('./app/routes/NFCRoutes');
 const app = express();
 const path = require('path');
 require('./doenv');
@@ -23,6 +24,7 @@ app.get('/',(req,res)=>{
 
 app.use('/user',userroutes);
 app.use('/payment',paymentRoutes);
+app.use('/nfc',nfcRoutes);
 
 
 
