@@ -1,5 +1,6 @@
 const sql = require('../modules/sql');
 const uuid = require('uniqid');
+const { RESTORE } = require('../modules/redis');
 
 exports.registerNFC = async (req,res)=>{
 
@@ -49,7 +50,7 @@ exports.getPaymentByNFC = async(req,res)=>{
 
     try{
 
-        if(!userId||!nfcID||!pin||!amount)
+        if(!userId||!nfcID||!amount)
         return res.status(401).send({"status": false, "code": 401, "msg": "Insufficent query"});
         let query = 'SELECT * FROM users WHERE UserId = ?';
         var [row,field] = await sql.query(query,[userId]);
@@ -74,7 +75,7 @@ exports.getPaymentByNFC = async(req,res)=>{
         var customerMobile = row2[0].Mobile;
         var RecieverMobile = row[0].Mobile;
 
-        if(row1[0].PIN!=pin)
+        if(amount>500&&row1[0].PIN!=pin)
         return res.status(401).send({"status": false, "code": 401, "msg": "Wrong pin"});
         if(amount>custometBalance)
         return res.status(401).send({"status": false, "code": 401, "msg": "Insufficient Balance"});
@@ -170,3 +171,37 @@ function getWalletBalance(UserId)
 
      });
 }
+
+
+
+exports.deactivateNFC = async(req,res)=>{
+
+    var userId = req.user.UserId;
+    var nfcID = req.body.nfcID;
+
+    try{
+
+     if(!userId||!nfcID)
+     return res.status(401).send({"status": false, "code": 401, "msg": "Insufficent query"});
+
+    let query = 'SELECT * FROM NFCTAGS WHERE UserId = ? AND NFCID = ?';
+    var [row,field] = await sql.query(query[userId,nfcID]);
+    if(row[0]==null)
+    return res.status(401).send({"status": false, "code": 401, "msg": "Invalid nfc"});
+
+    let query2 = 'UPDATE NFCTAGS SET IsActivated = false WHERE NFCID = ?';
+    await sql.query(query2,[nfcID]);
+    return res.status(200).send({"code":200,"msg":"NFC card deactivated"});
+
+
+    }
+    catch(e)
+    {
+        console.log(e);
+        return res.status(401).send({"status": false, "code": 401, "msg": "Something wents wrong"});   
+    }
+     
+
+
+
+};
