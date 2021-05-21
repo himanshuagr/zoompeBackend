@@ -75,6 +75,9 @@ exports.getPaymentByNFC = async(req,res)=>{
         var customerMobile = row2[0].Mobile;
         var RecieverMobile = row[0].Mobile;
 
+        amount = Number(amount);
+        custometBalance=Number(custometBalance);
+        recieverBalance=Number(recieverBalance);
         if(amount>500&&row1[0].PIN!=pin)
         return res.status(401).send({"status": false, "code": 401, "msg": "Wrong pin"});
         if(amount>custometBalance)
