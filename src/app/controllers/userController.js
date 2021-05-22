@@ -260,8 +260,9 @@ exports.getTransactionDetails = async(req,res)=>{
         WHERE UserId = ? AND IsSuccessful = 1
         ORDER BY TimeOfTransaction ASC;
         `;
+        console.log(index);
         var [row,field] = await sql.query(query,[UserId]);
-        if(row.length==index)
+        if(index>=row.length)
          return res.status(300).send();
         var transaction = []; 
         for(var i=index;i<row.length;i++)
