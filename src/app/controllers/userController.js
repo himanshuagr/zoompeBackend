@@ -255,7 +255,7 @@ exports.getTransactionDetails = async(req,res)=>{
       try{
        
         let query = `
-        SELECT CreditAmount,DebitAmount,TransactionType,TranasctionDetails,ref,TimeOfTransaction 
+        SELECT CreditAmount,DebitAmount,TransactionType,TransactionId,ref,TimeOfTransaction 
         FROM transactions
         WHERE UserId = ? AND IsSuccessful = 1
         ORDER BY TimeOfTransaction ASC;
@@ -271,7 +271,7 @@ exports.getTransactionDetails = async(req,res)=>{
                    "Debit"  : row[i].DebitAmount,
                    "Ref"    : row[i].ref,
                    "Time"   : row[i].TimeOfTransaction,
-                   "Details": row[i].TranasctionDetails,
+                   "TransactionId": row[i].TransactionId,
                    "Type"   : row[i].TransactionType
                };
                transaction.push(data);
@@ -289,3 +289,66 @@ exports.getTransactionDetails = async(req,res)=>{
 };
 
 
+exports.getProfile = async(req,res)=>{
+
+    var UserId = req.user.UserId;
+    try{
+
+        let query = "SELECT * FROM users WHERE UserId = ?"
+        var [row,field] = await sql.query(query,[UserId]);
+        if(row[0]==null)
+        return res.status(401).send({"status": false, "code": 401, "msg": "unable to load profile"});
+         
+         res.status(200).send({
+             "FirstName" : row[0].FirstName,
+             "LastName" : row[0].LastName,
+             "Email" : row[0].EmailId,
+             "Mobile" : row[0].Mobile
+         })
+
+    }
+    catch(e)
+    {
+        console.log(e.stack);
+        return res.status(401).send({"status": false, "code": 401, "msg": "unable to load profile"});
+    }
+
+}
+
+exports.getMycard = async(req,res)=>{
+
+    var UserId = req.user.UserId;
+    try{
+
+        let query = "SELECT * FROM users WHERE UserId = ?"
+        var [row,field] = await sql.query(query,[UserId]);
+        if(row[0]==null)
+        return res.status(401).send({"status": false, "code": 401, "msg": "unable to load profile"});
+
+        let query2 = "SELECT * FROM NFCTAGS WHERE UserId = ?";
+        var [row2,field2] = await sql.query(query2,[UserId]);
+
+        if(row2[0]==null)
+        return res.status(401).send({"status": false, "code": 401, "msg": "Card not associated with this account"});
+
+
+
+         
+         res.status(200).send({
+             "Name" : row[0].FirstName+" "+row[0].LastName,
+             "CardNumber" : row2[0].CardNumber,
+             "PIN":row2[0].PIN,
+             "NFCID": row2[0].NFCID
+             
+         })
+
+    }
+    catch(e)
+    {
+        console.log(e.stack);
+        return res.status(401).send({"status": false, "code": 401, "msg": "unable to get card"});
+    }
+
+        
+
+}

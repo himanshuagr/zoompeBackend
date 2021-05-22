@@ -7,6 +7,7 @@ const router = express.Router();
 router.post('/addmoneytowallet',auth,paymentController.addmoneytowallet);
 router.post('/verifypayment',paymentController.verifypayment);
 router.post('/walletTransfer',auth,paymentController.walletTransfer);
+router.post('/transferToBank',auth,paymentController.transferToBank)
 
 
 

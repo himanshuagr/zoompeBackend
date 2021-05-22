@@ -157,6 +157,46 @@ exports.verifypayment = async (req,res)=>{
 
 
 
+exports.transferToBank = async(req,res)=>{
+
+
+    var UserId = req.user.UserId;
+    try{
+           var amount = req.body.amount;
+           amount = Number(amount);
+           var accountName = req.body.accountName;
+           var accountNumber = req.body.accountNumber;
+           var ifsccode = req.body.ifscCode;
+           if(!amount||!accountName||!accountName||!ifsccode)
+           return res.status(401).send({"status": false, "code": 401, "msg": "Invalid query"});
+           let query = 'SELECT * FROM users WHERE UserId = ?';
+           var [row,field] = await sql.query(query,[UserId]);
+            if(row[0]==null)
+            return res.status(401).send({"status": false, "code": 401, "msg": "user not registered"}); 
+            var userWalletBalance = await getWalletBalance(UserId);
+            userWalletBalance =Number(userWalletBalance);
+            if(amount>userWalletBalance)
+            return res.status(401).send({"status": false, "code": 401, "msg": "Insufficient wallet balance"});
+            userWalletBalance = userWalletBalance-amount; 
+            var date = new Date();
+            var TransactionId = uuid('TN');
+            var TranasctionDetails = `${amount} rs transferred to account number${accountNumber} with transaction id ${TransactionId}`;
+            await updateTransaction(TransactionId,UserId,0,amount,true,date,userWalletBalance,"W2A",TranasctionDetails,accountNumber,null);
+            await updateWalletBalance(UserId,userWalletBalance);
+            return res.status(200).send({"msg":"Money transferred to Bank account"});
+             
+
+            
+    }
+    catch(e)
+    {
+
+    }
+
+
+};
+
+
 exports.walletTransfer = async (req,res)=>{
 
 

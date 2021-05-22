@@ -11,6 +11,8 @@ router.post('/loginByOtp',userController.loginByOtp);
 router.post('/loginVerifyOtp',userController.loginVerifyOtp);
 router.get('/getWalletBalance',auth,userController.getWalletBalance);
 router.get('/getTransactionDetails',auth,userController.getTransactionDetails);
+router.get('/getMycard',auth,userController.getMycard);
+router.get('/getProfile',auth,userController.getProfile);
 
 
 module.exports=router;
